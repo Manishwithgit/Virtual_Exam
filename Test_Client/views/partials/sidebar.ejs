@@ -1,0 +1,52 @@
+<!-- Sidebar -->
+<Sidebar>
+  <div class="ui sidebar float left vertical inverted visible labeled icon menu" style="background: linear-gradient(to top, #4b79a1, #283e51);width:130px;">
+  <a href="/dashboard" class="item">
+    <i class="home icon"></i>
+     Dashboard
+  </a>
+  <%if(type==0||type==1){%>
+  <a href="/manage_exam" class="item">
+    <i class="edit icon"></i>
+     Exams
+  </a>
+ <%}%>
+ <%if(type==0||type==1||type==2){%>
+  <a href="/manage_qa" class="item">
+    <i class="question icon"></i>
+     Ques & Ans
+  </a>
+<%}%>
+<%if(type==0||type==1){%>
+  <div class="ui dropdown item">
+    <i class="id card icon"></i>
+    Students
+    <div class="menu">
+      <a href="/manage_students" class="item"><i class="edit icon"></i>Add Students</a>
+    </div>
+  </div>
+  <%}%>
+ <%if(type==0||type==1){%>
+  <a href="/manage_checker" class="item">
+    <i class="users icon"></i>
+      Test Checker
+  </a>
+  <%}%>
+</div>
+</Sidebar>
+
+<!-- End of Sidebar -->
+<style>
+  .ui.sidebar {
+    overflow: visible !important;
+    position: fixed;
+    transition: top 0.3s;
+}
+.sidebar:hover{
+   overflow-y: scroll;
+}
+  </style>
+
+<script>
+  $('.ui .dropdown').dropdown();
+  </script>

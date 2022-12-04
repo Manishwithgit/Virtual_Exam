@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<meta name="description" content="" />
+		<meta name="author" content="" />
+
+		<title>Online Examination System - Dashboard</title>
+
+		<%- include('./partials/head') %>
+	</head>
+
+	<style>
+		body  {
+  			background-image: url("/images/exam2.webp");
+		}	
+	</style>
+
+	<body id="page-top" class="Site">
+		<!-- Page Wrapper -->
+		<div id="wrapper" class="Site-content">
+			<%- include('./partials/sidebar') %>
+
+			<!-- Content Wrapper -->
+			<div id="content-wrapper">
+				<!-- Main Content -->
+				<div id="content">
+					<%- include('./partials/header') %>
+					<br />
+					<%if(type==0){%>
+					<center><b>Welcome</b> <%-name%></center>
+					<%}%> <%if(type==1){%>
+					<center><b>Welcome</b> <%-name%></center>
+					<%}%> <%if(type==2){%>
+					<center><b>Welcome</b> <%-name%></center>
+					<%}%> <%if(type==3){%>
+					<center><b>Welcome</b> <%-name%></center>
+					<%}%>
+				</div>
+				<!-- End of Main Content -->
+			</div>
+			<!-- End of Content Wrapper -->
+		</div>
+		<!-- End of Page Wrapper -->
+
+		<%- include('./partials/footer') %>
+	</body>
+</html>

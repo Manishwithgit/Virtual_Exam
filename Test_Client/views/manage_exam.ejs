@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Online Examination System -Manage Exam</title>
+
+  <%- include('./partials/head') %>
+
+  <style>
+
+/* Smooth Scroll CSS */
+     html{
+       scroll-behavior: smooth;
+     }
+
+/* Splitting Form CSS*/
+     .subentry {
+    width: 50%;
+    float: left;
+    margin-bottom:1em;
+    }
+
+/* Fields CSS */
+    .field{
+      margin-left:2em;
+      margin-top:1.5em;
+    }
+    .ui.form.segment{
+      Position:relative;
+      Left:40px;
+      margin-left:6em;
+      width:90%;
+      height:70%;
+      margin-top:5em;
+    }
+    .field{
+      margin-left:2em;
+      margin-top:1em;
+    }
+    .ui.celled.table.len{
+      Position:relative;
+      Left:60px;
+      table-layout: fixed;
+      display:none;
+      max-width:80%;
+      margin-left:8em;
+      overflow: hidden;
+    }
+    .content{
+      margin-bottom:4em;
+    }
+    .ui.primary.button{
+      margin-left:45%;
+      margin-top:0.5em;
+    }
+
+  </style>
+
+</head>
+
+
+<body id="page-top" class = "Site" style="background-color:Lavender;overflow: auto;">
+
+  <!-- Page Wrapper -->
+<div id="wrapper" class="Site-content">
+
+
+ <%- include('./partials/header') %>
+
+  <!-- Page Wrapper -->
+  <div id="wrapper" class="Site-content">
+
+     <%- include('./partials/sidebar') %>
+
+
+          <div class="ui container">
+
+              <!-- Add Subject -->
+            <form class="ui form segment" method="post" action="/manage_exam/add_exam">
+              <div class="content">
+               <div class="subentry">
+                  <div class="field">
+                      <label>Enter the name of the Exam</label>
+                      <input placeholder="Enter exam name" name="exam_name" type="text" required>
+                  </div>
+
+                  <div class="field">
+                      <label>Set Exam Date</label>
+                      <input name="date" type="date" required>
+                  </div>
+
+                  <div class="field">
+                      <label>Enter the duration of Exam (in minutes)</label>
+                      <input placeholder="Duration" name="duration" type="text" required>
+                  </div>
+                  
+                  <div class="field">
+                    <label>Enter the duration of Login Window(in minutes)</label>
+                    <input placeholder="Duration" name="login_window" type="number" required>
+                 </div>
+                </div>
+
+                <div class="subentry">
+                  <div class="field" style="margin-left:1em;">
+                      <label>Enter the total marks of the Exam</label>
+                      <input placeholder="Enter Total Marks" name="tot_marks" type="text" required>
+                  </div>
+
+                  <div class="field" style="margin-left:1em;">
+                      <label><b>Enter the number of Warnings To Be Given</b></label>
+                      <input placeholder="No.Of Warnings" name="warn" type="number">
+                  </div>
+                  <div class="field" style="margin-left:1em;">
+                      <label><b>Enter the Start Time Of Exam</b></label>
+                      <input type="time" name="time">
+                  </div>
+                  <div class="field" style="margin-left:1em;">
+                    <label><b>Select the Level Of The Exam</b></label>
+                    <div class="ui fluid selection dropdown">
+                      <i class="dropdown icon"></i>
+                      <div class="default text">Select Level</div>
+                      <div class="menu">
+                          <div class="item" data-value="1">Easy</div>
+                          <div class="item" data-value="2">Medium</div>
+                          <div class="item" data-value="3">Hard</div>
+                      </div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="field">
+                  <label><b>Enter the subject/s assigned</b></label>
+                  <div class="ui fluid multiple search selection dropdown">
+                    <input name="subject" type="hidden" value="">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Select Subjects</div>
+                    <div class="menu">
+                    <% if(subjects.length){
+                      for(var i = 0;i < subjects.length;i++) { %>
+                        <div class="item" data-value="<%=subjects[i].id%>"><%=subjects[i].name%></div>
+                      <% }
+                    } %>
+                    </div>
+                  </div>
+                </div>
+                    <button class="ui primary right floated button" >Add Exam</button>
+              </div>
+            </form>
+
+            <div class="ui container">
+            <button class="ui primary button submit" id="myFunction" type="submit">View Exams</button>
+              </div>
+            <br>
+
+               <!-- Table For Exam -->
+               <div class="ui container main content">
+                    <table class="ui celled table len" id="view_exam_table" width="100%" cellspacing="0">
+                   <thead>
+                     <tr>
+                      <th>Exam Id</th>
+                      <%if(type==0){%>
+                        <th>Client Name</th>
+                      <%}%>
+                      <th>Exam Name</th>
+                      <th>Exam Date</th>
+                      <th>Start Time</th>
+                      <th>Total Marks</th>
+                      <th>Duration</th>
+                      <th>Edit</th>
+                      <th>Finalize</th>
+                      <th>Reinitialize</th>
+                     </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th><strong>Exam Id</strong></th>
+                      <%if(type==0){%>
+                        <th><strong>Client Name</strong></th>
+                      <%}%>
+                      <th><strong>Exam Name</strong></th>
+                      <th><strong>Exam Date</strong></th>
+                      <th><strong>Start Time</strong></th>
+                      <th><strong>Total Marks</strong></th>
+                      <th><strong>Duration</strong></th>
+                      <th><strong>Edit</strong></th>
+                      <th><strong>Finalize</strong></th>
+                      <th><strong>Reinitilize</strong></th>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                  <%
+                  if(exam.length){
+                   for(var i = 0;i < exam.length;i++) { %>
+                    <tr>
+                      <td><%=exam[i].exam_id%></td>
+                      <%if(type==0){%>
+                         <% if(exam[i].client_id==0){%>
+                            <td>Admin</td>
+                          <%}%>
+                          <%if(exam[i].client_id!=0){%>
+                             <%for(var j=0;j< name.length;j++){%>
+                                  <%if(name[j].client_id==exam[i].client_id){%>
+                                      <td><%=name[j].client_name%></td>
+                               <%}
+                             }
+                          }%>
+                      <%}%>
+                      <td><%=exam[i].exam_name.substring(0,8)%>.....</td>
+                      <td><%=exam[i].date%></td>
+                      <td><%=exam[i].start_time%></td>
+                      <td><%=exam[i].total_marks%></td>
+                      <td><%=exam[i].duration%></td>
+                      <td><%if(exam[i].confirm==0){%>
+                          <button class="ui orange icon button">
+                            <i class="edit icon"></i>
+                           </button>
+                      <%}%>
+                          <%if(exam[i].confirm==1){%>
+                            <strong>Confirmed</strong>
+                          <%}%>
+                        </td>
+                      <td><%if(exam[i].confirm==0){%>
+                          <button class="ui green icon button">
+                            <i class="check icon"></i>
+                           </button>
+                      <%}%>
+                          <%if(exam[i].confirm==1){%>
+                            <strong>Confirmed</strong>
+                          <%}%>
+                        </td>
+                        <td>
+                          <form action="/manage_exam/reinitialize" method = "post">
+                            <button class="ui blue icon button">
+                              <i class="recycle icon"></i>
+                            </button>
+                            <input type="hidden" name="exam_id" value="<%=exam[i].exam_id%>">
+                          </form>
+                        </td>
+                    </tr>
+                <% }
+                } %>
+
+                  </tbody>
+                </table>
+              </div>
+
+                <!-- End Of Table -->
+
+                <!--The Confirm Modal-->
+                  <div class="ui modal confirm" class="ui modal">
+                    <i class="close icon"></i>
+                     <div class="header" style="background-color: lightblue;">Confirm</div>
+                     <div class="content">
+                        <form class="ui form" action="/manage_exam/confirm" method="post">
+                          <p><strong><center>Are you Sure you want to confirm exam ????</center></strong></p>
+                           <button class="ui primary button" onClick="this.form.submit(); this.disabled=true;">Confirm</button>
+                           <input type="hidden" name="exam_id" id="exam_id_c">
+                        </form>
+                     </div>
+                   </div>
+                   <!--End Of Confirm Modal-->
+
+
+        <!--Edit Form Modal-->
+            <div class="ui modal test" class="ui large modal" style="background:Lavender;">
+               <i class="close icon"></i>
+                  <div class="header" style="background-color:#EDEDED;">Edit Exam Details</div>
+                     <div class="content" style="background:Lavender;">
+                        <form class="ui form" action="/manage_exam/edit" method="POST" id="subform">
+                           <div class="subentry">
+
+                                <div class="field">
+                                    <label>Enter the name of the Exam</label>
+                                     <input id="name" placeholder="Enter exam name" name="exam_name" type="text" required>
+                                 </div>
+
+                                <div class="field">
+                                    <label>Set Exam Date</label>
+                                    <input id="exam_date" name="date" type="date" required>
+                                </div>
+
+                                <div class="field">
+                                    <label>Enter the duration of Exam (in minutes)</label>
+                                    <input id="duration" placeholder="Duration" name="duration" type="text" required>
+                                </div>
+                                <div class="field">
+                                  <label><b>Enter the Login Window</b></label>
+                                   <input id="login_window" type="number" name="login_window">
+                              </div>
+                            </div>
+
+                            <div class="subentry">
+                                <div class="field" style="margin-left:1em;">
+                                    <label>Enter the total marks of the Exam</label>
+                                    <input id="total_marks" placeholder="Enter Total Marks" name="tot_marks" type="text" required>
+                                </div>
+
+                                <div class="field" style="margin-left:1em;">
+                                     <label><b>Enter the number of Warnings To Be Given</b></label>
+                                      <input id="warnings"placeholder="No.Of Warnings" name="warn" type="number">
+                                 </div>
+                                 <div class="field" style="margin-left:1em;">
+                                     <label><b>Enter the Start Time Of Exam</b></label>
+                                      <input id="start_time" type="time" name="time">
+                                 </div>
+                            </div>
+                            <br><br><button class="ui primary button">Update Exam</button><br><br>
+                            <input type="hidden" id="exam_id_update" name="exam_id">
+                      </form>
+                  </div>
+               </div>
+
+                   <!--End Of Edit Modal-->
+
+
+              </div>
+
+        </div>
+
+  </div>
+
+</body>
+
+<%- include('./partials/footer') %>
+
+<!-- Javascript for form validation -->
+<script>
+$(document).ready(function(){
+  $("#myFunction").click(function(){
+       $("#view_exam_table").toggle(800);
+      });
+    var table = $('#view_exam_table').DataTable();
+  });
+
+  $('.ui.dropdown').dropdown({
+    clearable: true
+  });
+
+  $(".ui.search.dropdown").dropdown({
+    allowAdditions: true,
+    selectOnKeydown: false,
+    match: 'text',
+    clearable: true
+  });
+
+    $(".ui.green.button").click(function() {
+      var $row = $(this).closest("tr"),        // Finds the closest row <tr>
+
+        $tds = $row.find("td:nth-child(1)");
+        $.each($tds, function() {
+        var id=$(this).text();
+        console.log(id);
+        document.getElementById("exam_id_c").value = id ;
+       });
+
+      $(function(){
+         $(".confirm").modal('show');
+           $(".confirm").modal({
+           closable: true
+        });
+     });
+   });
+
+    var exam_id;
+   $(".ui.orange.button").click(function() {
+     var $row = $(this).closest("tr"),        // Finds the closest row <tr>
+
+      $tds = $row.find("td:nth-child(1)");
+      $.each($tds, function() {
+      exam_id=$(this).text();
+      // console.log(exam_id);
+     });
+     console.log(exam_id);
+            $.ajax({
+               type: "POST",
+               data: {exam_id: exam_id},
+               url: 'manage_exam/details',
+               dataType: "json",
+               success: function(data)
+               {
+                   console.log('Success: ');
+                   console.log(data);
+                   if(data.user.length)
+                   {
+                     document.getElementById("name").value = data.user[0].exam_name;
+                     document.getElementById("total_marks").value = data.user[0].total_marks;
+                     document.getElementById("warnings").value = data.user[0].warning;
+                     document.getElementById("exam_date").value = data.user[0].date;
+                     document.getElementById("start_time").value = data.user[0].start_time;
+                     document.getElementById("duration").value = data.user[0].duration;
+                     document.getElementById("exam_id_update").value = exam_id;
+                     document.getElementById("login_window").value = data.user[0].login_window;
+                   }
+               }
+            });
+            $(function(){
+               $(".test").modal('show');
+                 $(".test").modal({
+                 closable: true
+              });
+           });
+       });
+
+</script>
+
+</html>
+
+

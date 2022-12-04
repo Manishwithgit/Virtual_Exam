@@ -1,0 +1,18 @@
+{
+    "apps": [
+        {
+            "name": "test_client",
+            "script": "server.js",
+            "watch": ["server.js", "routes/", "views/", "config/"],
+            "ignore_watch": ["node_modules/", "imports/", ".git"],
+            "env": {
+                "PORT": 7170,
+                "NODE_ENV": "development"
+            },
+            "env_production": {
+                "PORT": 7171,
+                "NODE_ENV": "production"
+            }
+        }
+    ]
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Online Examination System - Manage Setters</title>
+
+  <%- include('./partials/head') %>
+
+  <style>
+     html{
+       scroll-behavior: smooth;
+     }
+
+     .subentry {
+    width: 50%;
+    float: left;
+   }
+   .ui.form.segment{
+     Position:relative;
+     Left:40px;
+     margin-left:6em;
+     width:90%;
+     height:50%;
+     margin-top:5em;
+     overflow: hidden;
+   }
+   .ui.celled.table{
+     Position:relative;
+     Left:60px;
+     table-layout: fixed;
+     display:none;
+   }
+   .field{
+     margin-left:1em;
+   }
+   .ui.celled.table.len{
+     Position:relative;
+     Left:60px;
+     table-layout: fixed;
+     display:none;
+     width:80%;
+     margin-left:8em;
+   }
+   .ui.primary.button{
+     margin-left:45%;
+     margin-top:1em;
+   }
+  </style>
+
+</head>
+
+
+<body id="page-top" class = "Site"style="background-color:Lavender;overflow: auto;">
+
+  <!-- Page Wrapper -->
+   <div id="wrapper" class="Site-content">
+
+     <%- include('./partials/sidebar')%>
+
+
+        <%- include('./partials/header') %>
+
+
+          <div class="ui raised container">
+
+              <!-- Add Subject -->
+
+                    <form class="ui form segment" action="/manage_checker" method="post">
+                     <div class="content">
+                         <p id="message"></p>
+                       <input type="hidden" name="user_id" id="user_id" value="0">
+                      <div class="subentry">
+                        
+                        <div class="field">
+                          <label>Set Username</label>
+                          <input placeholder="Username" name="username" id="username" type="text" required>
+                        </div>
+
+                        <div class="field">
+                          <label>Set Password</label>
+                          <input placeholder="Password" name="password" type="password" id="pass" required>
+                        </div>
+
+                          <div class="field">
+                             <label>Enter the name of the User</label>
+                             <input placeholder="Enter the name" name="name" id="user_name" type="text" required>
+                          </div>
+
+                    </div>
+                  <div class="subentry">
+                      <div class="field" style="margin-left:1em;">
+                        <label>Enter the Mobile Number</label>
+                        <input placeholder="Enter the Mobile Number" name="mob" id="mob" type="number" required autofocus><span id="message"></span>
+                      </div>
+
+                       <div class="field" style="margin-left:1em;">
+                            <label>Set Exam</label>
+                            <select class="ui search dropdown" name="exam" id="exam" required>
+                               <option value="" required>Select Exam</option>
+                                <%
+                                  if(exam.length){
+                                   for(var i = 0;i < exam.length;i++) { %>
+                                   <option required value="<%=exam[i].exam_id%>"><%=exam[i].exam_name%></option>
+                               <% }
+                             } %>
+                          </select>
+                        </div>
+                        <div class="field" style="margin-left:1em;">
+                          <label>Enter the subject/s assigned</label>
+                          <select id="multi-select" required class="ui fluid search dropdown" multiple="" name="subject">
+                          </select>
+                      </div>
+            </div>
+
+                    <button class="ui primary right floated button">Add Checkers</button>
+                  </div>
+                </form>
+
+                       <button class="ui primary button submit" id="myFunction" type="submit">View Checkers</button>
+
+
+                <!-- View table the added Users for client -->
+
+                <table class="ui celled table len" id="view_user_table" width="100%" cellspacing="0">
+               <thead>
+                 <tr>
+                  <th>User Id</th>
+                  <th>Full Name</th>
+                  <%if(type==0){%>
+                    <th>Client Name</th>
+                  <%}%>
+                  <th>Mobile Number</th>
+                  <th>User Name</th>
+                  <th>User Password</th>
+                 </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th><strong>User Id</strong></th>
+                  <th><strong>Full Name</strong></th>
+                  <%if(type==0){%>
+                    <th><strong>Client Name</strong></th>
+                  <%}%>
+                  <th><strong>Mobile Number</strong></th>
+                  <th><strong>User Name</strong></th>
+                  <th><strong>User Password</strong></th>
+                </tr>
+              </tfoot>
+              <tbody>
+              <%
+              if(users.length){
+               for(var i = 0;i < users.length;i++) { %>
+
+                <tr>
+                  <td><%=users[i].user_id%></td>
+                  <td><%=users[i].name%></td>
+                  <%if(type==0){%>
+                     <% if(users[i].client_id==0){%>
+                        <td>Admin</td>
+                      <%}%>
+                      <%if(users[i].client_id!=0){%>
+                         <%for(var j=0;j< name.length;j++){%>
+                              <%if(name[j].client_id==users[i].client_id){%>
+                                  <td><%=name[j].client_name%></td>
+                           <%}
+                         }
+                      }%>
+                  <%}%>
+                  <td><%=users[i].mob_no%></td>
+                  <td><%=users[i].username%></td>
+                  <td><%=users[i].password%></td>
+                </tr>
+            <% }
+            } %>
+              </tbody>
+            </table>
+
+
+
+         </div>
+
+      </div>
+
+  <%- include('./partials/footer') %>
+
+
+</body>
+
+
+<!-- Javascript for validation -->
+<script>
+
+$('#multi-select').dropdown();
+
+$('#exam').dropdown({
+  clearable: true
+});
+
+$(document).ready(function(){
+  $("#myFunction").click(function(){
+       $("#view_user_table").toggle(800);
+      });
+    });
+
+
+    $(document).on("change", '#exam', function(e) {
+            var exam = $(this).val();
+            $.ajax({
+                type: "POST",
+                data: {exam: exam},
+                url: 'manage_users/option',
+                dataType: "json",
+                success: function(data){
+                  console.log('Success: ');
+                  console.log(data.user[0].sub_name);
+                  var arr=data.user[0].sub_name.split(",");
+                  console.log(arr);
+                  var arr2=[];
+                  for(var i=0;i<arr.length;i++)
+                  {
+                    <%for(var j=0;j< subject.length;j++)
+                    {%>
+                      if(arr[i]== <%=subject[j].sub_id%>)
+                      arr2[i]= "<%=subject[j].sub_name%>";
+                    <%}%>
+                  }
+                  console.log(arr2);
+
+                  target = $('#multi-select');
+                  $(target).empty();
+
+                  list = document.getElementById( 'multi-select' );
+                  for(var i=0;i< arr.length;i++)
+                  {
+                      list.options[i] = new Option(arr2[i], arr[i]);
+                  };
+
+              }
+      });
+    });
+
+
+    $("#username").keyup(function(){
+           var username = $(this).val();
+             $.ajax({
+                type: "POST",
+                data: {username: username},
+                url: 'manage_users/details',
+                dataType: "json",
+                success: function(data)
+                {
+                    console.log('Success: ');
+                    console.log(data);
+                    if(data.user.length)
+                    {
+                      $("#user_id").val(data.user[0].checker_id);
+                      document.getElementById("mob").value = data.user[0].mob_no;
+                      $("#mob").prop("readonly", true);
+                      document.getElementById("user_name").value = data.user[0].user_name;
+                      $("#user_name").prop("readonly", true);
+                      document.getElementById("pass").value = data.user[0].password;
+                      $("#pass").prop("readonly", true);
+                    }
+                    else{
+                      if(data.flag == 1){
+                      console.log('here')
+                      document.getElementById("message").innerHTML = 'Username Taken Please Use different username';
+                      }else{
+                        document.getElementById("message").innerHTML = '';
+                        $("#user_id").val('');
+                        document.getElementById("mob").value = '';
+                        $("#mob").prop("readonly", false);
+                        document.getElementById("user_name").value = '';
+                        $("#user_name").prop("readonly", false);
+                        document.getElementById("pass").value = '';
+                        $("#pass").prop("readonly", false);
+                      }
+                    }
+                }
+             });
+        });
+</script>
+
+</html>

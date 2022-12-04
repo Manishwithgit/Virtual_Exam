@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Online Examination System - Manage Ques/Ans Edit</title>
+
+  <%- include('./partials/head') %>
+
+  <style>
+  .main{
+    Position:relative;
+    Left:60px;
+    width:95%;
+    margin-top:5em;
+  }
+  .content{
+  padding-right: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+}
+  </style>
+
+</head>
+
+
+<body id="page-top" class = "Site" style="background-color:Lavender;overflow: auto;">
+
+  <!-- Page Wrapper -->
+   <div id="wrapper" class="Site-content">
+    <%- include('./partials/header') %>
+
+
+     <%- include('./partials/sidebar') %>
+
+
+
+          <div class="ui container main content">
+
+              <!-- The table for the details for exam -->
+                <table class="ui celled table" id="exam">
+                <thead>
+                   <tr><th>Exam ID</th>
+                   <th>Exam Name</th>
+                   <%if(type==0){%>
+                     <th>Client Name</th>
+                   <%}%>
+		   <th>Date</th>
+                   <th>Total Marks</th>
+                   <th>Duration</th>
+                   <th><center>Edit</center></th>
+                   </tr></thead>
+                   <tfoot>
+                     <tr><th><strong>Exam ID</strong></th>
+                     <th><strong>Exam Name</strong></th>
+                     <%if(type==0){%>
+                       <th><strong>Client Name</strong></th>
+                     <%}%>
+		     <th><strong>Date</strong></th>
+                     <th><strong>Total Marks</strong></th>
+                     <th><strong>Duration</strong></th>
+                     <th><strong><center>Edit</center></strong></th>
+                   </tr></tfoot>
+                <tbody>
+                  <%
+                  if(user.length){
+                   for(var i = 0;i < user.length;i++) { %>
+                <tr>
+              <td data-label="exam_id"><%=user[i].exam_id%></td>
+              <td data-label="exam_name"><%=user[i].exam_name%></td>
+              <%if(type==0){%>
+                 <% if(user[i].client_id==0){%>
+                    <td data-label="client_name">Admin</td>
+                  <%}%>
+                  <%if(user[i].client_id!=0){%>
+                     <%for(var j=0;j< name.length;j++){%>
+                          <%if(name[j].client_id==user[i].client_id){%>
+                              <td data-label="client_name"><%=name[j].client_name%></td>
+                       <%}
+                     }
+                  }%>
+              <%}%>
+	      <td data-label="marks"><%=user[i].date%></td>
+              <td data-label="marks"><%=user[i].total_marks%></td>
+              <td data-label="duration"><%=user[i].duration%></td>
+              <td><form class="ui form" action="/manage_qa/edit" method="post">
+                <center><button class="ui primary button">View Paper</button></center>
+                <input type="hidden" name="total_marks" value="<%=user[i].total_marks%>">
+                <input type="hidden" name="exam_id" value="<%=user[i].exam_id%>">
+                <input type="hidden" name="user_id" value="<%=user[i].user_id%>">
+                <input type="hidden" name="subject" value="<%=user[i].subject%>">
+                <input type="hidden" name="confirm" value="<%=user[i].confirm%>">
+                <input type="hidden" name="type" value="<%=type%>">
+              </form></td>
+              </tr>
+              <% }
+            } %>
+              </tbody>
+           </table>
+
+
+
+                <!-- View the added Users for client -->
+
+         </div>
+
+     </div>
+
+  <%- include('./partials/footer') %>
+
+
+</body>
+
+
+
+
+<!-- Javascript for form validation -->
+<script>
+
+   $(document).ready(function() {
+      $('#exam').DataTable();
+   });
+</script>
+
+</html>

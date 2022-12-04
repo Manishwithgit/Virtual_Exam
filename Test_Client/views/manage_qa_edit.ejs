@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<meta name="description" content="" />
+		<meta name="author" content="" />
+
+		<title>Online Examination System - Manage Ques/Ans Edit</title>
+
+		<%- include('./partials/head') %>
+
+		<style>
+			html {
+				scroll-behavior: smooth;
+			}
+			.Site {
+				background-color: Lavender;
+			}
+			.ui.container {
+				position: relative;
+				left: 60px;
+			}
+			.ui.selectable.celled.table {
+				box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			}
+			.heading {
+				color: maroon;
+			}
+			.big {
+				float: right;
+				width: 5%;
+			}
+			.check {
+				float: left;
+				margin-top: 0.25em;
+			}
+			.marks {
+				margin-left: 0.5em;
+				width: 8%;
+			}
+			.submit {
+				margin-left: 40%;
+				margin-top: 2em;
+			}
+			.ques {
+				width: 94%;
+			}
+			.pol {
+				margin-top: 0.5em;
+			}
+			.lok {
+				width: 30%;
+			}
+			.mok {
+				margin-top: 1em;
+				width: 10%;
+			}
+			.posi {
+				float: right;
+			}
+			.fol {
+				margin-top: 5em;
+			}
+			.pad {
+				padding-right: 20px;
+				padding-bottom: 20px;
+				padding-left: 20px;
+			}
+			.focusedRow {
+				font-weight: bold;
+				text-shadow: 1px 1px 0px #eee;
+				color: #111;
+			}
+		</style>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css" />
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.semanticui.min.css" />
+		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.semanticui.min.css" />
+
+		<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdn.datatables.net/1.10.21/js/dataTables.semanticui.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.semanticui.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.colVis.min.js"></script>		
+	</head>
+
+	<body id="page-top" class="Site" style="background-color: Lavender; overflow: auto">
+		<%- include('./partials/header') %>
+		<!-- Page Wrapper -->
+		<div id="wrapper" class="Site-content">
+			<%- include('./partials/sidebar') %>
+
+			<!-- Add Links to modals -->
+			<div class="ui container fol">
+				
+				<strong><div class="posi">Total Marks Remaining:<input id="rem" disabled style="width: 12%; color: red" /></div></strong>
+				<a href="#" class="link" id="sub">Add Subjective Question</a><br /><br />
+				<a href="#" class="link" id="obj">Add Objective Question</a><br /><br />
+		
+			</div>
+			<br />
+
+			<div class="ui container pad">
+				<h2 class="heading">
+					<hr />
+					<center>Subjective Questions</center>
+					<hr />
+				</h2>
+
+				<!--Buttons For Subjective DataTable-->
+				<div class="dt-buttons ui basic buttons">
+					<%if(confirm==0){%>
+					<button class="ui button buttons-selected buttons-edit" tabindex="0" aria-controls="example" type="button"><span>Edit</span></button>
+					<%}%> <%if(confirm==1){%>
+					<button class="ui button buttons-selected buttons-edit" tabindex="0" aria-controls="example" type="button" disabled><span>Edit</span></button>
+					<%}%>
+					<button class="ui button buttons-selected buttons-image" tabindex="0" aria-controls="example" type="button"><span>Images</span></button>
+				</div>
+				
+
+				<div class="ui container"><br /></div>
+				<!--DataTable For Subjective Questions-->
+				<table class="ui celled table" id="exam_s">
+					<thead>
+						<tr>
+							<th>Ques Id</th>
+							<th>Question</th>
+							<!--<th>Answer</th>-->
+							<th>Pos Marks</th>
+							<th>Omit</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th><b>Ques Id</b></th>
+							<th><b>Question</b></th>
+							<!--<th><b>Answer</b></th>-->
+							<th><b>Pos Marks</b></th>
+							<th><b>Omit</b></th>
+						</tr>
+					</tfoot>
+					<tbody>
+						<% if(ques.length){ for(var i = 0;i < ques.length;i++) { if(ques[i].type==2){ %>
+						<tr>
+							<td data-label="id"><%-ques[i].ques_id%></td>
+							<td data-label="ques"><%-ques[i].ques%></td>
+							<!--<td data-label="ans"><%-ques[i].ans%></td>-->
+							<td data-label="pos"><%-ques[i].pos_marks%></td>
+
+							<td>
+								<%if(confirm==0){%>
+								<form class="ui form" action="/manage_qa/edit/remove" method="post">
+									<button class="ui red icon button">
+										<i class="trash alternate outline icon"></i>
+									</button>
+									<input type="hidden" name="ques_id" value="<%=ques[i].ques_id%>" />
+								</form>
+								<%}%> <%if(confirm==1){%>
+								<strong>Finalized</strong>
+								<%}%>
+							</td>
+						</tr>
+						<% } } } %>
+					</tbody>
+				</table>
+
+				<h2 class="heading">
+					<hr />
+					<center>Objective Questions</center>
+					<hr />
+				</h2>
+
+				<!--Buttons For Objective Datatable-->
+				<div class="dt-buttons ui basic buttons">
+					<%if(confirm==0){%>
+					<button class="ui button buttons-selected buttons-edit_obj" tabindex="0" aria-controls="example" type="button"><span>Edit</span></button>
+					<%}%> <%if(confirm==1){%>
+					<button class="ui button buttons-selected buttons-edit_obj" tabindex="0" aria-controls="example" type="button" disabled><span>Edit</span></button>
+					<%}%>
+					<button class="ui button buttons-selected buttons-image_obj" tabindex="0" aria-controls="example" type="button"><span>Images</span></button>
+				</div>
+				<div class="ui container"><br /></div>
+
+				<!--DataTable For Objective Questions-->
+				<table class="ui celled table" id="exam_o">
+					<thead>
+						<tr>
+							<th>Ques Id</th>
+							<th>Question</th>
+							<th>Option 1</th>
+							<th>Option 2</th>
+							<th>Option 3</th>
+							<th>Option 4</th>
+							<th>Type</th>
+							<!--<th>Answer</th>-->
+							<th>Pos Marks</th>
+							<th>Neg Marks</th>
+							<th>Omit</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th><b>Ques Id</b></th>
+							<th><b>Question</b></th>
+							<th><b>Option 1</b></th>
+							<th><b>Option 2</b></th>
+							<th><b>Option 3</b></th>
+							<th><b>Option 4</b></th>
+							<th><b>Type</b></th>
+							<!--<th><b>Answer</b></th>-->
+							<th><b>Pos Marks</b></th>
+							<th><b>Neg Marks</b></th>
+							<th><b>Omit</b></th>
+						</tr>
+					</tfoot>
+					<tbody>
+						<% if(ques.length){ for(var i = 0;i < ques.length;i++) { if(ques[i].type==1||ques[i].type==3){%>
+						<tr>
+							<td data-label="id"><code><%-ques[i].ques_id%></code></td>
+							<td data-label="ques"><code><%-ques[i].ques%></code></td>
+							<td data-label="op_1"><%-ques[i].option_1%></td>
+							<td data-label="op_2"><%-ques[i].option_2%></td>
+							<td data-label="op_3"><%-ques[i].option_3%></td>
+							<td data-label="op_4"><%-ques[i].option_4%></td>
+							<%if(ques[i].type==1){%>
+							<td data-label="type">Mutiple Chioce</td>
+							<%}%> <%if(ques[i].type==3){%>
+							<td data-label="type">Single Choice</td>
+							<%}%>
+							<!--<td data-label="ans"><%-ques[i].ans%></td>-->
+							<td data-label="pos"><%=ques[i].pos_marks%></td>
+							<td data-label="neg"><%=ques[i].neg_marks%></td>
+							<td>
+								<%if(confirm==0){%>
+								<form class="ui form" action="/manage_qa/edit/remove" method="post">
+									<button class="ui red icon button">
+										<i class="trash alternate outline icon"></i>
+									</button>
+									<input type="hidden" name="ques_id" value="<%=ques[i].ques_id%>" />
+								</form>
+								<%}%> <%if(confirm==1){%>
+								<strong>Finalized</strong>
+								<%}%>
+							</td>
+						</tr>
+						<% } } } %>
+					</tbody>
+				</table>
+			</div>
+
+			<!--End Of Views Table -->
+
+			<br /><br /><br />
+
+			<!--The Instruction Modal-->
+			<div class="ui container pad">
+				<h2>INSTRUCTIONS</h2>
+				<form class="ui form" action="/manage_qa/edit/inst" method="post" id="instructions">
+					<div class="field">
+						<textarea rows="2" name="inst" placeholder="Enter the Custom Instructions....." required></textarea>
+					</div>
+					<div class="field">
+						<center><button class="ui primary button submit">Add Instructions</button></center>
+						<br />
+					</div>
+				</form>
+			</div>
+			<!--End Of Instruction Modal-->
+
+			<!-- Objective Question Form Modal-->
+
+			<div class="ui modal test1" class="ui modal">
+				<i class="close icon"></i>
+				<div class="header" style="background-color: #ededed">Add Objective Question</div>
+				<div class="content" style="background: Lavender">
+					<form class="ui form" action="/manage_qa/edit/obj" method="post" id="objform" enctype="multipart/form-data">
+						<div class="ui form">
+							<!-- Question -->
+							<div class="field">
+								<label>Question</label>
+								<textarea rows="3" class="ques" name="question_o" placeholder="Enter the Question....." required></textarea>
+								<input type="file" name="ques_img_o_0" class="dropify" />
+							</div>
+
+							<!--Options with txt and checkbox -->
+							<label><b>Enter Options:</b></label
+							><br /><br />
+
+							<!--Option 1-->
+							<div class="field">
+								<label>Option 1</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" id="ch_i_1" class="check" name="op[]" value="1" /><label></label></div>
+								<textarea rows="3" class="input" name="option1_o" placeholder="Enter the option 1....."></textarea>
+								<input type="file" name="op_1_img" class="dropify" id="fileupload_1_1" />
+							</div>
+
+							<!-- Option 2-->
+							<div class="field">
+								<label>Option 2</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" id="ch_i_2" class="check" name="op[]" value="2" /><label></label></div>
+								<textarea rows="3" class="option" name="option2_o" placeholder="Enter the option 2....."></textarea>
+								<input type="file" name="op_2_img" class="dropify" id="fileupload_2_2" />
+							</div>
+
+							<!--Option 3-->
+							<div class="field">
+								<label>Option 3</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" id="ch_i_3" name="op[]" class="check" value="3" /><label></label></div>
+								<textarea rows="3" class="option" name="option3_o" placeholder="Enter the option 3....."></textarea>
+								<input type="file" name="op_3_img" class="dropify" id="fileupload_3_3" />
+							</div>
+
+							<!--Option 4 -->
+							<div class="field">
+								<label>Option 4</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" id="ch_i_4" name="op[]" class="check" value="4" /><label></label></div>
+								<textarea rows="3" class="option" name="option4_o" placeholder="Enter the option 4....."></textarea>
+								<input type="file" name="op_4_img" class="dropify" id="fileupload_4_4" />
+							</div>
+							<br />
+
+							<!--Select Subjects Of the Exam -->
+							<div class="field lok">
+								<select name="sub_name" class="ui search dropdown" id="sub_name_1"></select>
+							</div>
+							<!--Positive Marks -->
+							<label><b>Positive Marks</b></label>
+							<input type="text" name="pos_marks" class="marks" id="Opos_marks" style="width: 8%" required />
+
+							<!--Negetive Marks -->
+							<label><b>Negetive Marks</b></label>
+							<input type="text" name="neg_marks" class="marks" style="width: 8%" required />
+
+							<div class="field">
+								<button class="ui primary button submit" onclick="return add1();">Submit</button>
+								<input type="hidden" name="ques_no" value="<%=count%>" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!--End Of Objective Modal-->
+
+			<!-- Objective Question Edit Modal -->
+
+			<div class="ui modal test3" class="ui modal">
+				<i class="close icon"></i>
+				<div class="header" style="background-color: #ededed">Add Objective Question</div>
+				<div class="content" style="background: Lavender">
+					<form class="ui form" action="/manage_qa/edit/updobj" id="objform_edit" method="post" enctype="multipart/form-data">
+						<div class="ui form">
+							<!-- Question -->
+							<div class="field">
+								<label>Question</label>
+								<input type="text" name="question" id="question_u" />
+								<input type="file" name="ques_img_o" class="dropify" id="fileupload_1" />
+							</div>
+
+							<!--Options with txt and checkbox -->
+							<label><b>Enter Options:</b></label
+							><br /><br />
+							<!-- Option 1 -->
+							<div class="field">
+								<label>Option 1</label>
+								<input type="checkbox" class="check" name="op[]" id="ch_1" value="1" /><label></label>
+								<input type="text" name="option1" id="option_1_u" class="option" />
+								<input type="file" name="op_1_img" class="dropify" id="fileupload_2" />
+							</div>
+
+							<!-- Option 2 -->
+							<div class="field">
+								<label>Option 2</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" name="op[]" class="check" id="ch_2" value="2" /><label></label></div>
+								<input type="text" name="option2" id="option_2_u" class="option" />
+								<input type="file" name="op_2_img" class="dropify" id="fileupload_3" />
+							</div>
+
+							<!-- Option 3 -->
+							<div class="field">
+								<label>Option 3</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" name="op[]" class="check" id="ch_3" value="3" /><label></label></div>
+								<input type="text" name="option3" id="option_3_u" class="option" />
+								<input type="file" name="op_3_img" class="dropify" id="fileupload_4" />
+							</div>
+
+							<!--Option 4-->
+							<div class="field">
+								<label>Option 4</label>
+								<div class="ui fitted checked checkbox pol"><input type="checkbox" name="op[]" class="check" value="4" id="ch_4" /><label></label></div>
+								<input type="text" name="option4" id="option_4_u" class="option" />
+								<input type="file" name="op_4_img" class="dropify" id="fileupload_5" />
+							</div>
+							<br />
+
+							<!--Select Subjects Of the Exam -->
+							<div class="field lok">
+								<select name="sub_name" class="ui search dropdown" id="sub_name_2"></select>
+							</div>
+							<!--Positive Marks -->
+							<label><b>Positive Marks</b></label>
+							<input type="text" name="pos_marks" id="Opos_marks_u" required style="width: 8%" />
+
+							<!-- Negetive Marks -->
+							<label><b>Negetive Marks</b></label>
+							<input type="text" name="neg_marks" id="Oneg_marks_u" style="width: 8%" />
+
+							<div class="field">
+								<button class="ui primary button submit" onclick="return add1();">Submit</button>
+								<input type="hidden" name="ques_no" value="<%=count%>" />
+								<input type="hidden" name="ques_id" id="ques_id_o" />
+								<input type="hidden" name="filecheck1" id="filecheck1" />
+								<input type="hidden" name="filecheck2" id="filecheck2" />
+								<input type="hidden" name="filecheck3" id="filecheck3" />
+								<input type="hidden" name="filecheck4" id="filecheck4" />
+								<input type="hidden" name="filecheck5" id="filecheck5" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!--End Of Objective Question Edit-->
+
+			<!-- Subjective Question Form Modal-->
+			<div class="ui modal test2" class="ui large modal">
+				<i class="close icon"></i>
+				<div class="header" style="background-color: #ededed">Add Subjective Question</div>
+				<div class="content" style="background: Lavender">
+					<form class="ui form" action="/manage_qa/edit/sub" method="POST" id="subform" enctype="multipart/form-data">
+						<div class="ui form">
+							<!--Question -->
+							<div class="field">
+								<label>Question</label>
+								<textarea rows="3" name="question_s" placeholder="Enter the Question....." class="ques"></textarea>
+								<input type="file" class="dropify" name="ques_img" id="fileupload" />
+							</div>
+
+							<!-- Answer -->
+							<div class="field">
+								<label>Answer</label>
+								<textarea rows="3" name="answer_s" placeholder="Enter the Answer....."></textarea>
+							</div>
+
+							<!--Select Subjects Of the Exam -->
+							<div class="field lok">
+								<select name="sub_name" class="ui search dropdown" id="sub_name"></select>
+							</div>
+
+							<!-- Positive Marks -->
+							<div class="field mok">
+								<label><b>Marks</b></label>
+								<input type="text" name="pos_marks" id="Spos_marks" required />
+							</div>
+							<div class="field">
+								<button class="ui primary button submit" onclick="return add();">Submit</button>
+								<input type="hidden" name="ques_no" value="<%=count%>" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!--End Of Subjective Modal-->
+
+			<!-- Subjective Question Edit Form Modal-->
+			<div class="ui modal test4" class="ui large modal">
+				<i class="close icon"></i>
+				<div class="header" style="background-color: #ededed">Add Subjective Question</div>
+				<div class="content" style="background: Lavender">
+					<form class="ui form" action="/manage_qa/edit/updsub" method="post" enctype="multipart/form-data">
+						<div class="ui form">
+							<!--Question -->
+							<div class="field">
+								<label>Question</label>
+								<textarea rows="3" name="question" id="question_s_u"></textarea>
+								<input type="file" name="ques_img" class="dropify" id="fileupload_e" class="file" />
+							</div>
+
+							<!-- Answer -->
+							<div class="field">
+								<label>Answer</label>
+								<textarea rows="3" name="answer" id="answer_s_u"></textarea>
+							</div>
+
+							<!--Select Subjects Of the Exam -->
+							<div class="field lok">
+								<select name="sub_name" class="ui search dropdown" id="sub_name_0"></select>
+							</div>
+
+							<!-- Positive Marks -->
+							<div class="field mok">
+								<label><b>Marks</b></label>
+								<input type="text" name="pos_marks" id="Spos_marks_u" required />
+							</div>
+							<!-- Submit Button -->
+							<div class="field">
+								<button class="ui primary button submit" onclick="return add();">Submit</button>
+								<input type="hidden" name="ques_id" id="ques_id_s" />
+								<input type="hidden" name="ques_no" value="<%=count%>" />
+								<input type="hidden" name="filecheck" id="filecheck" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!--End Of Subjective Question Edit Modal-->
+
+			<!-- Subjective Question Images Form Modal-->
+			<div class="ui modal test6" class="ui large modal">
+				<i class="close icon"></i>
+				<div class="header" style="background-color: #ededed">View Images</div>
+				<div class="content" style="background: Lavender">
+					<div class="scrolling content">
+						<div class="ui form">
+							<!--Question -->
+							<div class="field">
+								<label><b>Question</b></label
+								><br />
+								<img id="ques_img_s" height="100%" width="100%" style="display: none" onload="this.style.display=''" /><br />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--End Of Subjective Question Images Modal-->
+
+			<!-- Objective Question Images Form Modal-->
+			<div class="ui modal test5" class="ui large modal">
+				<i class="close icon"></i>
+				<div class="header" style="background-color: #ededed">View Images</div>
+				<div class="content" style="background: Lavender">
+					<div class="scrolling content">
+						<!--Question -->
+						<div class="field">
+							<label><b>Question</b></label
+							><br />
+							<img id="ques_img" height="100%" width="100%" style="display: none" onload="this.style.display=''" /><br />
+						</div>
+						<hr />
+						<div class="field">
+							<label><b>Option 1</b></label
+							><br />
+							<img id="op_1_img" height="100%" width="100%" style="display: none" onload="this.style.display=''" /><br />
+						</div>
+						<hr />
+						<div class="field">
+							<label><b>Option 2</b></label
+							><br />
+							<img id="op_2_img" height="100%" width="100%" style="display: none" onload="this.style.display=''" /><br />
+						</div>
+						<hr />
+						<div class="field">
+							<label><b>Option 3</b></label
+							><br />
+							<img id="op_3_img" height="100%" width="100%" style="display: none" onload="this.style.display=''" /><br />
+						</div>
+						<hr />
+						<div class="field">
+							<label><b>Option 4</b></label
+							><br />
+							<img id="op_4_img" height="100%" width="100%" style="display: none" onload="this.style.display=''" /><br />
+						</div>
+						<hr />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--End Of Objective Question Images Modal-->
+	</body>
+
+	<%- include('./partials/footer') %>
+
+	<!--Use CKEDITOR-->
+	<script>
+		CKEDITOR.replace("inst");
+		CKEDITOR.replace("question_o");
+		CKEDITOR.replace("question_s");
+		CKEDITOR.replace("answer_s");
+		CKEDITOR.replace("option1_o");
+		CKEDITOR.replace("option2_o");
+		CKEDITOR.replace("option3_o");
+		CKEDITOR.replace("option4_o");
+	</script>
+
+	<script>
+		$(".dropify").dropify();
+	</script>
+
+	<!-- Javascript for ui modal and Datatables -->
+	<script>
+		$(function () {
+			$("#obj").click(function () {
+				$(".test1").modal("show");
+			});
+			$(".test1").modal({
+				closable: true,
+			});
+		});
+
+		$(function () {
+			$("#sub").click(function () {
+				$(".test2").modal("show");
+			});
+			$(".test2").modal({});
+			closable: true;
+		});
+
+		$(function () {
+			$("#inst").click(function () {
+				$(".inst").modal("show");
+			});
+			$(".inst").modal({});
+			closable: true;
+		});
+	</script>
+
+	<!-- Javascript For Options Of Subject -->
+	<script>
+		var arr = "<%=subject_exam%>".split(",");
+
+		list = document.getElementById("sub_name");
+		list1 = document.getElementById("sub_name_0");
+		list2 = document.getElementById("sub_name_1");
+		list3 = document.getElementById("sub_name_2");
+
+		var arr2 = [];
+
+		for(var i=0;i<arr.length;i++){
+		    <%for(var j=0;j< subject_all.length;j++)
+		    {%>
+		      if(arr[i]== "<%=subject_all[j].sub_id%>")
+		      arr2[i]= "<%=subject_all[j].sub_name%>";
+		    <%}%>
+		  }
+
+		for (var i = 0; i < arr.length; i++) {
+			list.options[i] = new Option(arr2[i], arr[i]);
+			list1.options[i] = new Option(arr2[i], arr[i]);
+			list2.options[i] = new Option(arr2[i], arr[i]);
+			list3.options[i] = new Option(arr2[i], arr[i]);
+		}
+	</script>
+
+	<!-- Javascript For remaining marks -->
+	<script>
+		var total_marks = "<%=total_marks%>";
+		var cal_marks = "<%=marks[0].cal_marks%>";
+		var rema = document.getElementById("rem");
+		rem.value = +total_marks - +cal_marks;
+
+		// Function for Subjective Alert //
+		function add() {
+			if (document.getElementById("fileupload_e").files.length != 0) {
+				document.getElementById("filecheck").value = 1;
+			} else {
+				document.getElementById("filecheck").value = 0;
+			}
+
+			var marks = $("#Spos_marks").val();
+			if (+marks + +cal_marks > +total_marks) {
+				window.alert("Your Excedding The Total Marks");
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		//Function For Objective Alert//
+		function add1() {
+			if (document.getElementById("fileupload_1").files.length != 0) {
+				document.getElementById("filecheck1").value = 1;
+			} else {
+				document.getElementById("filecheck1").value = 0;
+			}
+			if (document.getElementById("fileupload_2").files.length != 0) {
+				document.getElementById("filecheck2").value = 1;
+			} else {
+				document.getElementById("filecheck2").value = 0;
+			}
+			if (document.getElementById("fileupload_3").files.length != 0) {
+				document.getElementById("filecheck3").value = 1;
+			} else {
+				document.getElementById("filecheck3").value = 0;
+			}
+			if (document.getElementById("fileupload_4").files.length != 0) {
+				document.getElementById("filecheck4").value = 1;
+			} else {
+				document.getElementById("filecheck4").value = 0;
+			}
+			if (document.getElementById("fileupload_5").files.length != 0) {
+				document.getElementById("filecheck5").value = 1;
+			} else {
+				document.getElementById("filecheck5").value = 0;
+			}
+			//End Of Check//
+			var marks = $("#Opos_marks").val();
+			if (+marks + +cal_marks > +total_marks) {
+				window.alert("Your Excedding The Total Marks");
+				return false;
+			} else {
+				return true;
+			}
+		}
+	</script>
+
+	<!-- Javascript For Edit Question Function -->
+	<script>
+		var editor;
+
+		$(document).ready(function () {
+			//Datatable For Subjective Questions//
+			var table = $("#exam_s").DataTable({
+				lengthChange: false,
+				select: true,
+				buttons: ["excel", "pdf", "print"]
+			});
+
+			table.buttons().container().appendTo($("div.eight.column:eq(0)", table.table().container()));
+
+			//Edit For Subjective Using Edit Button//
+			$(".ui.button.buttons-selected.buttons-edit").click(function () {
+				var ques_id = $.map(table.rows(".selected").data(), function (item) {
+					console.log(item);
+					return item[0];
+				});
+				console.log("here", ques_id);
+				if (ques_id.length == 0) {
+					alert("Please select a question first");
+				} else {
+					$.ajax({
+						type: "POST",
+						data: { ques_id: ques_id },
+						url: "./details",
+						dataType: "json",
+						success: function (data) {
+							console.log("Success: ");
+							if (data.user.length) {
+								document.getElementById("ques_id_s").value = data.user[0].ques_id;
+								document.getElementById("question_s_u").value = data.user[0].ques;
+								document.getElementById("answer_s_u").value = data.user[0].ans;
+								document.getElementById("Spos_marks_u").value = data.user[0].pos_marks;
+							}
+						},
+					});
+					$(function () {
+						$(".test4").modal("show");
+						$(".test4").modal({
+							closable: true,
+						});
+					});
+				}
+			});
+
+			//Image For Subjective Using Image Button//
+			$(".ui.button.buttons-selected.buttons-image").click(function () {
+				document.getElementById("ques_img").style.display = "none";
+				document.getElementById("op_1_img").style.display = "none";
+				document.getElementById("op_2_img").style.display = "none";
+				document.getElementById("op_3_img").style.display = "none";
+				document.getElementById("op_4_img").style.display = "none";
+
+				var ques_id = $.map(table.rows(".selected").data(), function (item) {
+					return item[0];
+				});
+				console.log(ques_id);
+				if (ques_id.length == 0) {
+					alert("Please select a question first");
+				} else {
+					$.ajax({
+						type: "POST",
+						data: { ques_id: ques_id },
+						url: "./details",
+						dataType: "json",
+						success: function (data) {
+							console.log("Success: ");
+							console.log(data);
+							if (data.user.length) {
+								var logo = document.getElementById("ques_img_s");
+								var path_ques = "/uploads/Exam_<%=exam_id%>/" + data.user[0].ques_img;
+								logo.setAttribute("src", path_ques);
+							}
+						},
+					});
+					$(function () {
+						$(".test6").modal("show");
+						$(".test6").modal({
+							closable: true,
+						});
+					});
+				}
+			});
+
+			//Datatable for Objective Questions//
+			var table_1 = $("#exam_o").DataTable({
+				lengthChange: false,
+				select: true,
+				dom: "Bfrtip",
+				buttons: ["excel", "pdf", "print"],
+			});
+			table_1.buttons().container().appendTo($("div.eight.column:eq(0)", table_1.table().container()));
+
+			//Edit For Objective Using Edit Button//
+			$(".ui.button.buttons-selected.buttons-edit_obj").click(function () {
+				var ques_id = $.map(table_1.rows(".selected").data(), function (item) {
+					console.log(item);
+					return item[0];
+				});
+				console.log(ques_id);
+				if (ques_id.length == 0) {
+					alert("Please select a question first");
+				} else {
+					$.ajax({
+						type: "POST",
+						data: { ques_id: ques_id },
+						url: "./details",
+						dataType: "json",
+						success: function (data) {
+							console.log("Success: ");
+							console.log(data);
+							if (data.user.length) {
+								document.getElementById("ques_id_o").value = data.user[0].ques_id;
+								document.getElementById("question_u").value = data.user[0].ques;
+								document.getElementById("option_1_u").value = data.user[0].option_1;
+								document.getElementById("option_2_u").value = data.user[0].option_2;
+								document.getElementById("option_3_u").value = data.user[0].option_3;
+								document.getElementById("option_4_u").value = data.user[0].option_4;
+
+								var ans = data.user[0].ans;
+								var arr = ans.split(",");
+								for (var i = 0; i < arr.length; i++) {
+									if (arr[i] == "1") document.getElementById("ch_1").checked = true;
+									else if (arr[i] == "2") document.getElementById("ch_2").checked = true;
+									else if (arr[i] == "3") document.getElementById("ch_3").checked = true;
+									else if (arr[i] == "4") document.getElementById("ch_4").checked = true;
+								}
+
+								document.getElementById("Opos_marks_u").value = data.user[0].pos_marks;
+								document.getElementById("Oneg_marks_u").value = data.user[0].neg_marks;
+							}
+						},
+					});
+					$(function () {
+						$(".test3").modal("show");
+						$(".test3").modal({
+							closable: true,
+						});
+					});
+				}
+			});
+
+			//Image Button For Objective Datatable//
+			$(".ui.button.buttons-selected.buttons-image_obj").click(function () {
+				document.getElementById("ques_img").style.display = "none";
+				document.getElementById("op_1_img").style.display = "none";
+				document.getElementById("op_2_img").style.display = "none";
+				document.getElementById("op_3_img").style.display = "none";
+				document.getElementById("op_4_img").style.display = "none";
+
+				var ques_id = $.map(table_1.rows(".selected").data(), function (item) {
+					return item[0];
+				});
+
+				console.log(ques_id);
+				if (ques_id.length == 0) {
+					alert("Please select a question");
+				} else {
+					$.ajax({
+						type: "POST",
+						data: { ques_id: ques_id },
+						url: "./details",
+						dataType: "json",
+						success: function (data) {
+							console.log("Success: ");
+							console.log(data);
+							if (data.user.length) {
+								var logo = document.getElementById("ques_img");
+								var path_ques = "/uploads/Exam_<%=exam_id%>/" + data.user[0].ques_img;
+								logo.setAttribute("src", path_ques);
+
+								var logo1 = document.getElementById("op_1_img");
+								var path_ques1 = "/uploads/Exam_<%=exam_id%>/" + data.user[0].option_1_img;
+								logo1.setAttribute("src", path_ques1);
+
+								var logo2 = document.getElementById("op_2_img");
+								var path_ques2 = "/uploads/Exam_<%=exam_id%>/" + data.user[0].option_2_img;
+								logo2.setAttribute("src", path_ques2);
+
+								var logo3 = document.getElementById("op_3_img");
+								var path_ques3 = "/uploads/Exam_<%=exam_id%>/" + data.user[0].option_3_img;
+								logo3.setAttribute("src", path_ques3);
+
+								var logo4 = document.getElementById("op_4_img");
+								var path_ques4 = "/uploads/Exam_<%=exam_id%>/" + data.user[0].option_4_img;
+								logo4.setAttribute("src", path_ques4);
+							}
+						},
+					});
+					$(function () {
+						$(".test5").modal("show");
+						$(".test5").modal({
+							closable: true,
+						});
+					});
+				}
+			});
+		});
+	</script>
+
+	<!-- Check Whether One Checkbox Is Ticked Or Not-->
+	<script>
+		$("#objform").submit(function () {
+			var checked = $("#objform input:checked").length > 0;
+			if (!checked) {
+				alert("Please check at least one checkbox");
+				return false;
+			}
+		});
+
+		$("#objform_edit").submit(function () {
+			var checked = $("#objform_edit input:checked").length > 0;
+			if (!checked) {
+				alert("Please check at least one checkbox");
+				return false;
+			}
+		});
+	</script>
+</html>

@@ -1,0 +1,91 @@
+<!--Header-->
+  <header class="header">
+        <div class="ui menu"style="background-color:#EDEDED">
+
+
+              <% if(id==0){ %>
+            <div class="pos">MANAGE CLIENTS</div>
+              <%}%>
+              <% if(id==1){ %>
+            <div class="pos">DASHBOARD</div>
+              <%}%>
+              <% if(id==2){ %>
+            <div class="pos">MANAGE EXAMS</div>
+              <%}%>
+              <% if(id==3){ %>
+            <div class="pos">MANAGE SETTERS</div>
+              <%}%>
+              <% if(id==4){ %>
+            <div class="pos">MANAGE QUES AND ANSWER</div>
+              <%}%>
+              <% if(id==5){ %>
+            <div class="pos">MANAGE STUDENTS</div>
+              <%}%>
+              <% if(id==6){ %>
+            <div class="pos">MANAGE CHECKERS</div>
+              <%}%>
+              <% if(id==7){ %>
+            <div class="pos">EXAMINATION RESULT</div>
+              <%}%>
+              <% if(id==8){ %>
+            <div class="pos">CHECK ANSWERS</div>
+              <%}%>
+              <% if(id==9){ %>
+            <div class="pos">FINAL RESULT</div>
+              <%}%>
+
+
+                <div class="ui right menu">
+                    <i class="user icon "></i>
+                    <div class="ui simple dropdown item">
+                     <strong>
+                      <%if(type==0){%>
+                        Admin
+                      <%}%>
+                      <%if(type==1){%>
+                        Client
+                      <%}%>
+                      <%if(type==2){%>
+                        Setter
+                      <%}%>
+                      <%if(type==3){%>
+                        Checker
+                      <%}%>
+                  </strong>
+                      <div class="menu vis">
+                        <div class="item">Profile</div>
+                        <div class="item">Settings</div>
+                        <div class="item">Activity Log</div>
+                        <div class="ui divider"></div>
+                        <div class="item">
+                          <a href="/logout">Logout</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+  </header>
+
+  <style>
+    .ui.menu{
+      margin-top:1em;
+    }
+    .pos{
+      position:relative;
+      margin-left: 45%;
+      font-size: x-large;
+      font-weight: bold;
+      margin-top:0.6em;
+    }
+    .ui.right.menu{
+      margin-right:2em;
+      margin-top:0.25em;
+      margin-bottom:0.25em;
+    }
+    .user.icon{
+      margin-top:0.5em;
+      margin-left:0.5em;
+    }
+
+    </style>
